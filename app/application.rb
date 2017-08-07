@@ -1,5 +1,7 @@
-class Application
+require 'pry'
 
+class Application
+  @@cart = []
   @@items = ["Apples","Carrots","Pears"]
 
   def call(env)
@@ -16,6 +18,27 @@ class Application
     else
       resp.write "Path Not Found"
     end
+
+    if req.path.match(/cart/)
+      if @@cart.empty?
+        resp.write "Your cart is empty"
+      else
+        @@cart.each do |item|
+          resp.write "#{item}\n"
+        end
+      end
+    end
+
+    if req.path.match(/add/)
+      item = req.params["item"]
+      if @@items.include?(item) && !@@cart.include?(item)
+        @@cart << item
+        resp.write "added #{item}"
+      elsif !@@items.include?(item)
+        resp.write "We don't have that item"
+      end
+    end
+
 
     resp.finish
   end
